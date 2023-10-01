@@ -31,6 +31,7 @@ namespace fifteen
         tile_position::type col;
 
         tile_position(tile_position::type r, tile_position::type c) : row(r), col(c) {}
+        tile_position& operator=(const tile_position& other) = default;
 
         void set(tile_position::type r, tile_position::type c)
         {

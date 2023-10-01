@@ -31,7 +31,13 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    TTF_Font *font = TTF_OpenFont("BebasNeue-Regular.ttf", 24);
+    if (TTF_Init() == -1)
+    {
+        fprintf(stderr, "cannot initalize font\n");
+        exit(EXIT_FAILURE);
+    }
+
+    TTF_Font *font = TTF_OpenFont("./BebasNeue-Regular.ttf", 12);
     if (font == NULL)
     {
         fprintf(stderr, "error: font not found\n");

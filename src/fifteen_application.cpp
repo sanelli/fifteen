@@ -199,6 +199,7 @@ void fifteen::fifteen_application::process_events() noexcept
 
 void fifteen::fifteen_application::render() const noexcept
 {
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
     for (tile_position::type row = 0; row < FIFTEEN_BOARD_SIZE; ++row)
     {
@@ -210,6 +211,13 @@ void fifteen::fifteen_application::render() const noexcept
                 .h = TILE_SIZE,
                 .w = TILE_SIZE};
             auto tile_number = board[{row, col}];
+            SDL_Rect board_rectangle{
+                .x = 0,
+                .y = 0,
+                .w = TILE_SIZE * FIFTEEN_BOARD_SIZE,
+                .h = TILE_SIZE * FIFTEEN_BOARD_SIZE};
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+            SDL_RenderDrawRect(renderer, &board_rectangle);
             SDL_RenderCopy(renderer, tiles[tile_number], NULL, &texture_rect);
         }
     }

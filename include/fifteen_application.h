@@ -25,9 +25,14 @@ namespace fifteen
         SDL_Texture *footer_texture;
         SDL_Rect footer_rect;
         SDL_Rect solved_texture_rect;
+        TTF_Font *footer_font;
+        int move_count;
+        int rendered_move_count;
+        SDL_Texture *counter_texture;
+        SDL_Rect counter_rect;
 
         void process_events() noexcept;
-        void render() const noexcept;
+        void render() noexcept;
         void cap_frame_rate(Uint64 &start) const noexcept;
 
     public:

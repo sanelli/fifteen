@@ -15,6 +15,9 @@ namespace fifteen
 
 fifteen::fifteen_application::fifteen_application() noexcept
 {
+    counter_texture = nullptr;
+    move_count = 0;
+    rendered_move_count = move_count - 1;
     solved = false;
     processing = true;
     board.shuffle();
@@ -110,7 +113,7 @@ fifteen::fifteen_application::fifteen_application() noexcept
     solved_texture_rect.h = TILE_SIZE * FIFTEEN_BOARD_SIZE;
 
     // Footer texture
-    TTF_Font *footer_font = TTF_OpenFont("./BebasNeue-Regular.ttf", 20);
+    footer_font = TTF_OpenFont("./BebasNeue-Regular.ttf", 20);
     if (footer_font == NULL)
     {
         fprintf(stderr, "error: font not found\n");
@@ -127,7 +130,6 @@ fifteen::fifteen_application::fifteen_application() noexcept
     footer_texture = SDL_CreateTextureFromSurface(renderer, footer_surface);
     SDL_FreeSurface(footer_text_surface);
     SDL_FreeSurface(footer_surface);
-    TTF_CloseFont(footer_font);
     footer_rect.x = 0;
     footer_rect.y = TILE_SIZE * FIFTEEN_BOARD_SIZE;
     footer_rect.w = TILE_SIZE * FIFTEEN_BOARD_SIZE;
@@ -136,6 +138,7 @@ fifteen::fifteen_application::fifteen_application() noexcept
 
 fifteen::fifteen_application::~fifteen_application()
 {
+    TTF_CloseFont(footer_font);
     TTF_Quit();
 
     // Destroy the textures
@@ -144,6 +147,10 @@ fifteen::fifteen_application::~fifteen_application()
         SDL_DestroyTexture(tiles[tileIndex]);
     }
 
+    if (counter_texture != nullptr)
+    {
+        SDL_DestroyTexture(counter_texture);
+    }
     SDL_DestroyTexture(footer_texture);
     SDL_DestroyTexture(solved_texture);
     SDL_DestroyRenderer(renderer);
@@ -193,6 +200,7 @@ void fifteen::fifteen_application::process_events() noexcept
                     tile_position tile{static_cast<tile_position::type>(row), static_cast<tile_position::type>(col)};
                     if (board.canMove(std::forward<tile_position>(tile)))
                     {
+                        ++move_count;
                         board.move(std::forward<tile_position>(tile));
                         solved = board.solved();
                     }
@@ -207,6 +215,7 @@ void fifteen::fifteen_application::process_events() noexcept
             case SDL_SCANCODE_UP:
                 if (!solved && board.canMove(fifteen::tile_move_action::up))
                 {
+                    ++move_count;
                     board.move(fifteen::tile_move_action::up);
                     solved = board.solved();
                 }
@@ -215,6 +224,7 @@ void fifteen::fifteen_application::process_events() noexcept
             case SDL_SCANCODE_DOWN:
                 if (!solved && board.canMove(fifteen::tile_move_action::down))
                 {
+                    ++move_count;
                     board.move(fifteen::tile_move_action::down);
                     solved = board.solved();
                 }
@@ -223,6 +233,7 @@ void fifteen::fifteen_application::process_events() noexcept
             case SDL_SCANCODE_RIGHT:
                 if (!solved && board.canMove(fifteen::tile_move_action::right))
                 {
+                    ++move_count;
                     board.move(fifteen::tile_move_action::right);
                     solved = board.solved();
                 }
@@ -231,19 +242,23 @@ void fifteen::fifteen_application::process_events() noexcept
             case SDL_SCANCODE_LEFT:
                 if (!solved && board.canMove(fifteen::tile_move_action::left))
                 {
+                    ++move_count;
                     board.move(fifteen::tile_move_action::left);
                     solved = board.solved();
                 }
                 break;
 
             case SDL_SCANCODE_N: // NEW GAME
+                move_count = 0;
                 board.shuffle();
                 solved = false;
                 break;
 
             case SDL_SCANCODE_C: // CHEAT
-                board.reset();
-                solved = false;
+                if (!solved)
+                {
+                    board.reset();
+                }
                 break;
 
             default:
@@ -257,13 +272,32 @@ void fifteen::fifteen_application::process_events() noexcept
     }
 }
 
-void fifteen::fifteen_application::render() const noexcept
+void fifteen::fifteen_application::render() noexcept
 {
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
 
     // Render footer
+    if (rendered_move_count != move_count)
+    {
+        auto counter_text = std::string("Moves: ") + std::to_string(move_count);
+        auto counter_text_surface = TTF_RenderText_Solid(footer_font, counter_text.c_str(), {0xFF, 0xFF, 0xFF, 0xFF});
+
+        if (counter_texture != nullptr)
+        {
+            SDL_DestroyTexture(counter_texture);
+        }
+        counter_texture = SDL_CreateTextureFromSurface(renderer, counter_text_surface);
+        counter_rect.x = TILE_SIZE * FIFTEEN_BOARD_SIZE - counter_text_surface->clip_rect.w - 5;
+        counter_rect.y = TILE_SIZE * FIFTEEN_BOARD_SIZE + (TILE_SIZE / 3 - counter_text_surface->clip_rect.h) / 2;
+        counter_rect.w = counter_text_surface->clip_rect.w;
+        counter_rect.h = counter_text_surface->clip_rect.h;
+        SDL_FreeSurface(counter_text_surface);
+        rendered_move_count = move_count;
+    }
+
     SDL_RenderCopy(renderer, footer_texture, NULL, &footer_rect);
+    SDL_RenderCopy(renderer, counter_texture, NULL, &counter_rect);
 
     // Render board
     if (solved)

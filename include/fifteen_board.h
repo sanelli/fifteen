@@ -11,59 +11,11 @@
 #include <iostream>
 #include <iomanip>
 
+#include <tile_position.h>
 #include <fifteen_error.h>
 
 namespace fifteen
 {
-    enum class tile_move_action
-    {
-        up,
-        down,
-        left,
-        right
-    };
-
-    struct tile_position
-    {
-        using type = unsigned int;
-        tile_position::type row;
-        tile_position::type col;
-
-        tile_position(tile_position::type r, tile_position::type c) : row(r), col(c) {}
-        tile_position& operator=(const tile_position& other) = default;
-
-        void set(tile_position::type r, tile_position::type c)
-        {
-            row = r;
-            col = c;
-        }
-
-        bool isAboveOf(tile_position &other) const noexcept
-        {
-            return row == other.row + 1 && col == other.col;
-        }
-
-        bool isBelowOf(tile_position &other) const noexcept
-        {
-            return row == other.row - 1 && col == other.col;
-        }
-
-        bool isLeftOf(tile_position &other) const noexcept
-        {
-            return row == other.row && col == other.col + 1;
-        }
-
-        bool isRightOf(tile_position &other) const noexcept
-        {
-            return row == other.row && col == other.col - 1;
-        }
-
-        bool isAround(tile_position &other)
-        {
-            return isAboveOf(other) || isBelowOf(other) || isLeftOf(other) || isRightOf(other);
-        }
-    };
-
     template <std::size_t N>
     class fifteen_board
     {

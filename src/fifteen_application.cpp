@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <utility>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -125,6 +126,26 @@ void fifteen::fifteen_application::process_events() noexcept
         case SDL_QUIT:
             processing = false;
             break;
+
+        case SDL_MOUSEBUTTONUP:
+        {
+            int mouse_x, mouse_y;
+            SDL_GetMouseState(&mouse_x, &mouse_y);
+            auto col = mouse_x / TILE_SIZE;
+            auto row = mouse_y / TILE_SIZE;
+            if (col >= 0 &&
+                col < FIFTEEN_BOARD_SIZE &&
+                row >= 0 &&
+                row < FIFTEEN_BOARD_SIZE)
+            {
+                tile_position tile{static_cast<tile_position::type>(row), static_cast<tile_position::type>(col)};
+                if (board.canMove(std::forward<tile_position>(tile)))
+                {
+                    board.move(std::forward<tile_position>(tile));
+                }
+            }
+        }
+        break;
 
         case SDL_KEYDOWN:
             switch (event.key.keysym.scancode)

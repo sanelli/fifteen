@@ -177,6 +177,30 @@ src/fifteen_application.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/src/fifteen_application.cpp.s
 .PHONY : src/fifteen_application.cpp.s
 
+src/tile_position.o: src/tile_position.cpp.o
+.PHONY : src/tile_position.o
+
+# target to build an object file
+src/tile_position.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/src/tile_position.cpp.o
+.PHONY : src/tile_position.cpp.o
+
+src/tile_position.i: src/tile_position.cpp.i
+.PHONY : src/tile_position.i
+
+# target to preprocess a source file
+src/tile_position.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/src/tile_position.cpp.i
+.PHONY : src/tile_position.cpp.i
+
+src/tile_position.s: src/tile_position.cpp.s
+.PHONY : src/tile_position.s
+
+# target to generate assembly for a file
+src/tile_position.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/src/tile_position.cpp.s
+.PHONY : src/tile_position.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... src/fifteen_application.o"
 	@echo "... src/fifteen_application.i"
 	@echo "... src/fifteen_application.s"
+	@echo "... src/tile_position.o"
+	@echo "... src/tile_position.i"
+	@echo "... src/tile_position.s"
 .PHONY : help
 
 

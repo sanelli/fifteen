@@ -9,6 +9,9 @@ find_package(SDL2_Image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
 add_executable(fifteen main.cpp)
+add_subdirectory(src)
+
+# -- Add libraries
 target_include_directories(fifteen PRIVATE include)
 if(MSVC)
   target_compile_options(fifteen PRIVATE /W4 /WX)

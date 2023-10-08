@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/stefano/devel/repos/fifteen/CMakeFiles /Users/stefano/devel/repos/fifteen//CMakeFiles/progress.marks
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+	cd /Users/stefano/devel/repos/fifteen && $(CMAKE_COMMAND) -E cmake_progress_start /Users/stefano/devel/repos/fifteen/CMakeFiles /Users/stefano/devel/repos/fifteen/src//CMakeFiles/progress.marks
+	cd /Users/stefano/devel/repos/fifteen && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/stefano/devel/repos/fifteen/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd /Users/stefano/devel/repos/fifteen && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,79 +103,18 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/stefano/devel/repos/fifteen && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/stefano/devel/repos/fifteen && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/stefano/devel/repos/fifteen && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named fifteen
-
-# Build rule for target.
-fifteen: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fifteen
-.PHONY : fifteen
-
-# fast build rule for target.
-fifteen/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/build
-.PHONY : fifteen/fast
-
-main.o: main.cpp.o
-.PHONY : main.o
-
-# target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/main.cpp.o
-.PHONY : main.cpp.o
-
-main.i: main.cpp.i
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/main.cpp.s
-.PHONY : main.cpp.s
-
-src/fifteen_application.o: src/fifteen_application.cpp.o
-.PHONY : src/fifteen_application.o
-
-# target to build an object file
-src/fifteen_application.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/src/fifteen_application.cpp.o
-.PHONY : src/fifteen_application.cpp.o
-
-src/fifteen_application.i: src/fifteen_application.cpp.i
-.PHONY : src/fifteen_application.i
-
-# target to preprocess a source file
-src/fifteen_application.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/src/fifteen_application.cpp.i
-.PHONY : src/fifteen_application.cpp.i
-
-src/fifteen_application.s: src/fifteen_application.cpp.s
-.PHONY : src/fifteen_application.s
-
-# target to generate assembly for a file
-src/fifteen_application.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fifteen.dir/build.make CMakeFiles/fifteen.dir/src/fifteen_application.cpp.s
-.PHONY : src/fifteen_application.cpp.s
 
 # Help Target
 help:
@@ -185,13 +124,6 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... fifteen"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... src/fifteen_application.o"
-	@echo "... src/fifteen_application.i"
-	@echo "... src/fifteen_application.s"
 .PHONY : help
 
 
@@ -203,6 +135,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/stefano/devel/repos/fifteen && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

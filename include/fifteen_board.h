@@ -11,11 +11,10 @@
 #include <iostream>
 #include <iomanip>
 
-#include "fifteen_error.h"
+#include <fifteen_error.h>
 
 namespace fifteen
 {
-
     enum class tile_move_action
     {
         up,

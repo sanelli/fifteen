@@ -8,7 +8,7 @@
 - cmake .
 - cmake --build .
 
-# Font
-## Babas Beue
+# References and credits
+## Bebas Neue Font
 - [Google Fonts](https://fonts.google.com/specimen/Bebas+Neue/about)
 - [Git Hub](https://github.com/dharmatype/Bebas-Neue)

@@ -5,3 +5,4 @@ fifteen
 build/
 .DS_Store
 src/Makefile
+Makefile

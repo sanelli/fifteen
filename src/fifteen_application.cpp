@@ -44,24 +44,17 @@ fifteen::fifteen_application::fifteen_application() noexcept
         exit(EXIT_FAILURE);
     }
 
-    font = TTF_OpenFont("./BebasNeue-Regular.ttf", 52);
-    if (font == NULL)
-    {
-        fprintf(stderr, "error: font not found\n");
-        exit(EXIT_FAILURE);
-    }
-
-    solved_font = TTF_OpenFont("./BebasNeue-Regular.ttf", 80);
-    if (solved_font == NULL)
-    {
-        fprintf(stderr, "error: font not found\n");
-        exit(EXIT_FAILURE);
-    }
-
     // Create the renderer
     renderer = SDL_CreateRenderer(window, -1, 0);
 
-    // Create the surfaces
+    // Create the texture of the tiles
+    TTF_Font *tiles_font = TTF_OpenFont("./BebasNeue-Regular.ttf", 52);
+    if (tiles_font == NULL)
+    {
+        fprintf(stderr, "error: font not found\n");
+        exit(EXIT_FAILURE);
+    }
+
     for (fifteen::tiles_array_size tileIndex = 0; tileIndex < tiles.size(); ++tileIndex)
     {
         const int tile_border = 1;
@@ -78,7 +71,7 @@ fifteen::fifteen_application::fifteen_application() noexcept
         if (tileIndex > 0)
         {
             auto number = std::to_string(tileIndex);
-            SDL_Surface *text_surface = TTF_RenderText_Solid(font, number.c_str(), font_color);
+            SDL_Surface *text_surface = TTF_RenderText_Solid(tiles_font, number.c_str(), font_color);
             SDL_Rect text_target_rect{
                 .x = (TILE_SIZE - text_surface->clip_rect.w) / 2,
                 .y = (TILE_SIZE - text_surface->clip_rect.h) / 2,
@@ -91,26 +84,59 @@ fifteen::fifteen_application::fifteen_application() noexcept
         tiles[tileIndex] = SDL_CreateTextureFromSurface(renderer, tile_surface);
         SDL_FreeSurface(tile_surface);
     }
+    TTF_CloseFont(tiles_font);
 
     // Generate solved texture
+    TTF_Font *solved_font = TTF_OpenFont("./BebasNeue-Regular.ttf", 80);
+    if (solved_font == NULL)
+    {
+        fprintf(stderr, "error: font not found\n");
+        exit(EXIT_FAILURE);
+    }
     auto solved_surface = SDL_CreateRGBSurface(0, TILE_SIZE * FIFTEEN_BOARD_SIZE, TILE_SIZE * FIFTEEN_BOARD_SIZE, 32, 0, 0, 0, 0);
     auto solved_text_surface = TTF_RenderText_Solid(solved_font, "You win!", {0x00, 0xFF, 0x00, 0xFF});
     SDL_Rect solved_text_surface_rect{
         .x = (TILE_SIZE * FIFTEEN_BOARD_SIZE - solved_text_surface->clip_rect.w) / 2,
         .y = (TILE_SIZE * FIFTEEN_BOARD_SIZE - solved_text_surface->clip_rect.h) / 2,
         .w = solved_text_surface->clip_rect.w,
-        .h = solved_text_surface->clip_rect.h
-    };
+        .h = solved_text_surface->clip_rect.h};
     SDL_BlitSurface(solved_text_surface, &solved_text_surface->clip_rect, solved_surface, &solved_text_surface_rect);
     solved_texture = SDL_CreateTextureFromSurface(renderer, solved_surface);
     SDL_FreeSurface(solved_text_surface);
     SDL_FreeSurface(solved_surface);
+    TTF_CloseFont(solved_font);
+    solved_texture_rect.x = 0;
+    solved_texture_rect.y = 0;
+    solved_texture_rect.w = TILE_SIZE * FIFTEEN_BOARD_SIZE;
+    solved_texture_rect.h = TILE_SIZE * FIFTEEN_BOARD_SIZE;
+
+    // Footer texture
+    TTF_Font *footer_font = TTF_OpenFont("./BebasNeue-Regular.ttf", 20);
+    if (footer_font == NULL)
+    {
+        fprintf(stderr, "error: font not found\n");
+        exit(EXIT_FAILURE);
+    }
+    auto footer_surface = SDL_CreateRGBSurface(0, TILE_SIZE * FIFTEEN_BOARD_SIZE, TILE_SIZE / 3, 32, 0, 0, 0, 0);
+    auto footer_text_surface = TTF_RenderText_Solid(footer_font, "N: New game | Arrow/Mouse: Move", {0xFF, 0xFF, 0xFF, 0xFF});
+    SDL_Rect footer_text_surface_rect{
+        .x = 1,
+        .y = (TILE_SIZE / 3 - footer_text_surface->clip_rect.h) / 2,
+        .w = footer_text_surface->clip_rect.w,
+        .h = footer_text_surface->clip_rect.h};
+    SDL_BlitSurface(footer_text_surface, &footer_text_surface->clip_rect, footer_surface, &footer_text_surface_rect);
+    footer_texture = SDL_CreateTextureFromSurface(renderer, footer_surface);
+    SDL_FreeSurface(footer_text_surface);
+    SDL_FreeSurface(footer_surface);
+    TTF_CloseFont(footer_font);
+    footer_rect.x = 0;
+    footer_rect.y = TILE_SIZE * FIFTEEN_BOARD_SIZE;
+    footer_rect.w = TILE_SIZE * FIFTEEN_BOARD_SIZE;
+    footer_rect.h = TILE_SIZE / 3;
 }
 
 fifteen::fifteen_application::~fifteen_application()
 {
-    TTF_CloseFont(font);
-    TTF_CloseFont(solved_font);
     TTF_Quit();
 
     // Destroy the textures
@@ -119,6 +145,7 @@ fifteen::fifteen_application::~fifteen_application()
         SDL_DestroyTexture(tiles[tileIndex]);
     }
 
+    SDL_DestroyTexture(footer_texture);
     SDL_DestroyTexture(solved_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -235,13 +262,13 @@ void fifteen::fifteen_application::render() const noexcept
 {
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
+
+    // Render footer
+    SDL_RenderCopy(renderer, footer_texture, NULL, &footer_rect);
+
+    // Render board
     if (solved)
     {
-        SDL_Rect solved_texture_rect{
-            .x = 0,
-            .y = 0,
-            .w = TILE_SIZE * FIFTEEN_BOARD_SIZE,
-            .h = TILE_SIZE * FIFTEEN_BOARD_SIZE};
         SDL_RenderCopy(renderer, solved_texture, NULL, &solved_texture_rect);
         SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
         SDL_RenderDrawRect(renderer, &solved_texture_rect);

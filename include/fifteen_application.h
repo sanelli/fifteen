@@ -16,8 +16,6 @@ namespace fifteen
     {
     private:
         SDL_Window *window;
-        TTF_Font *font;
-        TTF_Font *solved_font;
         SDL_Renderer *renderer;
         fifteen::fifteen_board<FIFTEEN_BOARD_SIZE> board;
         std::array<SDL_Texture *, FIFTEEN_BOARD_SIZE * FIFTEEN_BOARD_SIZE> tiles;
@@ -25,7 +23,10 @@ namespace fifteen
         bool solved;
         SDL_Color font_color;
         SDL_Texture *solved_texture;
-        
+        SDL_Texture *footer_texture;
+        SDL_Rect footer_rect;
+        SDL_Rect solved_texture_rect;
+
         void process_events() noexcept;
         void render() const noexcept;
         void cap_frame_rate(Uint64 &start) const noexcept;

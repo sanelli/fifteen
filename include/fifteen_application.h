@@ -21,7 +21,6 @@ namespace fifteen
         std::array<SDL_Texture *, FIFTEEN_BOARD_SIZE * FIFTEEN_BOARD_SIZE> tiles;
         bool processing;
         bool solved;
-        SDL_Color font_color;
         SDL_Texture *solved_texture;
         SDL_Texture *footer_texture;
         SDL_Rect footer_rect;

@@ -17,7 +17,6 @@ fifteen::fifteen_application::fifteen_application() noexcept
 {
     solved = false;
     processing = true;
-    font_color = {0xFF, 0xFF, 0xFF, 0xFF};
     board.shuffle();
 
     if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0)
@@ -71,7 +70,7 @@ fifteen::fifteen_application::fifteen_application() noexcept
         if (tileIndex > 0)
         {
             auto number = std::to_string(tileIndex);
-            SDL_Surface *text_surface = TTF_RenderText_Solid(tiles_font, number.c_str(), font_color);
+            SDL_Surface *text_surface = TTF_RenderText_Solid(tiles_font, number.c_str(), {0xFF, 0xFF, 0xFF, 0xFF});
             SDL_Rect text_target_rect{
                 .x = (TILE_SIZE - text_surface->clip_rect.w) / 2,
                 .y = (TILE_SIZE - text_surface->clip_rect.h) / 2,

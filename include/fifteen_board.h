@@ -66,7 +66,7 @@ namespace fifteen
 
         bool solved() const noexcept
         {
-            for (auto index = 0; index < (numberOfTiles() - 2); ++index)
+            for (auto index = 0; index < (static_cast<signed int>(numberOfTiles()) - 2); ++index)
             {
                 if (tiles[index] != index + 1)
                 {

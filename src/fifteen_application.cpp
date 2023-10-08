@@ -15,6 +15,7 @@ namespace fifteen
 
 fifteen::fifteen_application::fifteen_application() noexcept
 {
+    solved = false;
     processing = true;
     font_color = {0xFF, 0xFF, 0xFF, 0xFF};
     board.shuffle();
@@ -45,6 +46,13 @@ fifteen::fifteen_application::fifteen_application() noexcept
 
     font = TTF_OpenFont("./BebasNeue-Regular.ttf", 52);
     if (font == NULL)
+    {
+        fprintf(stderr, "error: font not found\n");
+        exit(EXIT_FAILURE);
+    }
+
+    solved_font = TTF_OpenFont("./BebasNeue-Regular.ttf", 80);
+    if (solved_font == NULL)
     {
         fprintf(stderr, "error: font not found\n");
         exit(EXIT_FAILURE);
@@ -83,19 +91,35 @@ fifteen::fifteen_application::fifteen_application() noexcept
         tiles[tileIndex] = SDL_CreateTextureFromSurface(renderer, tile_surface);
         SDL_FreeSurface(tile_surface);
     }
+
+    // Generate solved texture
+    auto solved_surface = SDL_CreateRGBSurface(0, TILE_SIZE * FIFTEEN_BOARD_SIZE, TILE_SIZE * FIFTEEN_BOARD_SIZE, 32, 0, 0, 0, 0);
+    auto solved_text_surface = TTF_RenderText_Solid(solved_font, "You win!", {0x00, 0xFF, 0x00, 0xFF});
+    SDL_Rect solved_text_surface_rect{
+        .x = (TILE_SIZE * FIFTEEN_BOARD_SIZE - solved_text_surface->clip_rect.w) / 2,
+        .y = (TILE_SIZE * FIFTEEN_BOARD_SIZE - solved_text_surface->clip_rect.h) / 2,
+        .w = solved_text_surface->clip_rect.w,
+        .h = solved_text_surface->clip_rect.h
+    };
+    SDL_BlitSurface(solved_text_surface, &solved_text_surface->clip_rect, solved_surface, &solved_text_surface_rect);
+    solved_texture = SDL_CreateTextureFromSurface(renderer, solved_surface);
+    SDL_FreeSurface(solved_text_surface);
+    SDL_FreeSurface(solved_surface);
 }
 
 fifteen::fifteen_application::~fifteen_application()
 {
     TTF_CloseFont(font);
+    TTF_CloseFont(solved_font);
     TTF_Quit();
 
-    // Destroy the surfaces
+    // Destroy the textures
     for (fifteen::tiles_array_size tileIndex = 0; tileIndex < tiles.size(); ++tileIndex)
     {
         SDL_DestroyTexture(tiles[tileIndex]);
     }
 
+    SDL_DestroyTexture(solved_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 }
@@ -129,19 +153,23 @@ void fifteen::fifteen_application::process_events() noexcept
 
         case SDL_MOUSEBUTTONUP:
         {
-            int mouse_x, mouse_y;
-            SDL_GetMouseState(&mouse_x, &mouse_y);
-            auto col = mouse_x / TILE_SIZE;
-            auto row = mouse_y / TILE_SIZE;
-            if (col >= 0 &&
-                col < FIFTEEN_BOARD_SIZE &&
-                row >= 0 &&
-                row < FIFTEEN_BOARD_SIZE)
+            if (!solved)
             {
-                tile_position tile{static_cast<tile_position::type>(row), static_cast<tile_position::type>(col)};
-                if (board.canMove(std::forward<tile_position>(tile)))
+                int mouse_x, mouse_y;
+                SDL_GetMouseState(&mouse_x, &mouse_y);
+                auto col = mouse_x / TILE_SIZE;
+                auto row = mouse_y / TILE_SIZE;
+                if (col >= 0 &&
+                    col < FIFTEEN_BOARD_SIZE &&
+                    row >= 0 &&
+                    row < FIFTEEN_BOARD_SIZE)
                 {
-                    board.move(std::forward<tile_position>(tile));
+                    tile_position tile{static_cast<tile_position::type>(row), static_cast<tile_position::type>(col)};
+                    if (board.canMove(std::forward<tile_position>(tile)))
+                    {
+                        board.move(std::forward<tile_position>(tile));
+                        solved = board.solved();
+                    }
                 }
             }
         }
@@ -151,39 +179,45 @@ void fifteen::fifteen_application::process_events() noexcept
             switch (event.key.keysym.scancode)
             {
             case SDL_SCANCODE_UP:
-                if (board.canMove(fifteen::tile_move_action::up))
+                if (!solved && board.canMove(fifteen::tile_move_action::up))
                 {
                     board.move(fifteen::tile_move_action::up);
+                    solved = board.solved();
                 }
                 break;
 
             case SDL_SCANCODE_DOWN:
-                if (board.canMove(fifteen::tile_move_action::down))
+                if (!solved && board.canMove(fifteen::tile_move_action::down))
                 {
                     board.move(fifteen::tile_move_action::down);
+                    solved = board.solved();
                 }
                 break;
 
             case SDL_SCANCODE_RIGHT:
-                if (board.canMove(fifteen::tile_move_action::right))
+                if (!solved && board.canMove(fifteen::tile_move_action::right))
                 {
                     board.move(fifteen::tile_move_action::right);
+                    solved = board.solved();
                 }
                 break;
 
             case SDL_SCANCODE_LEFT:
-                if (board.canMove(fifteen::tile_move_action::left))
+                if (!solved && board.canMove(fifteen::tile_move_action::left))
                 {
                     board.move(fifteen::tile_move_action::left);
+                    solved = board.solved();
                 }
                 break;
 
-            case SDL_SCANCODE_S: // SHUFFLE
+            case SDL_SCANCODE_N: // NEW GAME
                 board.shuffle();
+                solved = false;
                 break;
 
             case SDL_SCANCODE_C: // CHEAT
                 board.reset();
+                solved = false;
                 break;
 
             default:
@@ -201,26 +235,41 @@ void fifteen::fifteen_application::render() const noexcept
 {
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
-    for (tile_position::type row = 0; row < FIFTEEN_BOARD_SIZE; ++row)
+    if (solved)
     {
-        for (tile_position::type col = 0; col < FIFTEEN_BOARD_SIZE; ++col)
+        SDL_Rect solved_texture_rect{
+            .x = 0,
+            .y = 0,
+            .w = TILE_SIZE * FIFTEEN_BOARD_SIZE,
+            .h = TILE_SIZE * FIFTEEN_BOARD_SIZE};
+        SDL_RenderCopy(renderer, solved_texture, NULL, &solved_texture_rect);
+        SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
+        SDL_RenderDrawRect(renderer, &solved_texture_rect);
+    }
+    else
+    {
+        for (tile_position::type row = 0; row < FIFTEEN_BOARD_SIZE; ++row)
         {
-            SDL_Rect texture_rect{
-                .x = static_cast<int>(col * TILE_SIZE),
-                .y = static_cast<int>(row * TILE_SIZE),
-                .h = TILE_SIZE,
-                .w = TILE_SIZE};
-            auto tile_number = board[{row, col}];
-            SDL_Rect board_rectangle{
-                .x = 0,
-                .y = 0,
-                .w = TILE_SIZE * FIFTEEN_BOARD_SIZE,
-                .h = TILE_SIZE * FIFTEEN_BOARD_SIZE};
-            SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-            SDL_RenderDrawRect(renderer, &board_rectangle);
-            SDL_RenderCopy(renderer, tiles[tile_number], NULL, &texture_rect);
+            for (tile_position::type col = 0; col < FIFTEEN_BOARD_SIZE; ++col)
+            {
+                SDL_Rect texture_rect{
+                    .x = static_cast<int>(col * TILE_SIZE),
+                    .y = static_cast<int>(row * TILE_SIZE),
+                    .h = TILE_SIZE,
+                    .w = TILE_SIZE};
+                auto tile_number = board[{row, col}];
+                SDL_Rect board_rectangle{
+                    .x = 0,
+                    .y = 0,
+                    .w = TILE_SIZE * FIFTEEN_BOARD_SIZE,
+                    .h = TILE_SIZE * FIFTEEN_BOARD_SIZE};
+                SDL_RenderCopy(renderer, tiles[tile_number], NULL, &texture_rect);
+                SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+                SDL_RenderDrawRect(renderer, &board_rectangle);
+            }
         }
     }
+
     SDL_RenderPresent(renderer);
 }
 

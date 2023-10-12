@@ -36,7 +36,7 @@ namespace fifteen
             return 0;
         }
 
-        void validateRowAndColumn(tile_position &tile) const
+        void validateRowAndColumn(const tile_position &tile) const
         {
             if (tile.row >= N || tile.col >= N)
             {
@@ -44,7 +44,7 @@ namespace fifteen
             }
         }
 
-        tile_position::type getIndex(tile_position &tile) const noexcept
+        tile_position::type getIndex(const tile_position &tile) const noexcept
         {
             auto index = tile.row * N + tile.col;
             assert(index < numberOfTiles());
@@ -56,6 +56,11 @@ namespace fifteen
         {
             reset();
         }
+
+        fifteen_board(const fifteen_board&) = delete;
+        fifteen_board(fifteen_board&&) = delete;
+        fifteen_board& operator=(const fifteen_board&) = delete;
+        fifteen_board& operator=(fifteen_board&&) = delete;
 
         itemType_t operator[](tile_position &&tile) const
         {
@@ -84,7 +89,7 @@ namespace fifteen
                 tiles[index] = index + 1;
             }
             tiles[numberOfTiles() - 1] = getEmptyTileValue();
-            emptyTile.set(N - 1, N - 1);
+            emptyTile = {N - 1, N - 1};
         }
 
         void shuffle() noexcept
@@ -118,12 +123,12 @@ namespace fifteen
             std::cout << std::left;
         }
 
-        bool canMove(tile_position &&tile) const noexcept
+        bool canMove(const tile_position &&tile) const noexcept
         {
             return emptyTile.isAround(tile);
         }
 
-        void move(tile_position &&tile)
+        void move(const tile_position &&tile)
         {
             if (emptyTile.isAround(tile))
             {
@@ -140,7 +145,7 @@ namespace fifteen
             }
         }
 
-        bool canMove(tile_move_action action) const noexcept
+        bool canMove(const tile_move_action action) const noexcept
         {
             auto signedRow = static_cast<signed>(emptyTile.row);
             auto signedCol = static_cast<signed>(emptyTile.col);
@@ -166,7 +171,7 @@ namespace fifteen
             }
         }
 
-        void move(tile_move_action action)
+        void move(const tile_move_action action)
         {
             if (canMove(action))
             {

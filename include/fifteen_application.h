@@ -37,7 +37,13 @@ namespace fifteen
 
     public:
         fifteen_application() noexcept;
+        fifteen_application(const fifteen_application &) = delete;
+        fifteen_application(fifteen_application &&) = delete;
+
         ~fifteen_application();
+
+        fifteen_application &operator=(const fifteen_application &) = delete;
+        fifteen_application &operator=(fifteen_application &&) = delete;
 
         bool run() noexcept;
         int exit_code() const noexcept;

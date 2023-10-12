@@ -16,13 +16,12 @@ namespace fifteen
         tile_position::type row;
         tile_position::type col;
 
-        tile_position(tile_position::type r, tile_position::type c) noexcept;
+        tile_position(const tile_position::type r, const tile_position::type c) noexcept;
         tile_position& operator=(const tile_position& other) = default;
-        void set(tile_position::type r, tile_position::type c);
-        bool isAboveOf(tile_position &other) const noexcept;
-        bool isBelowOf(tile_position &other) const noexcept;
-        bool isLeftOf(tile_position &other) const noexcept;
-        bool isRightOf(tile_position &other) const noexcept;
-        bool isAround(tile_position &other) const noexcept;
+        bool isAboveOf(const tile_position &other) const noexcept;
+        bool isBelowOf(const tile_position &other) const noexcept;
+        bool isLeftOf(const tile_position &other) const noexcept;
+        bool isRightOf(const tile_position &other) const noexcept;
+        bool isAround(const tile_position &other) const noexcept;
     };
 }

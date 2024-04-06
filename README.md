@@ -12,3 +12,6 @@
 ## Bebas Neue Font
 - [Google Fonts](https://fonts.google.com/specimen/Bebas+Neue/about)
 - [Git Hub](https://github.com/dharmatype/Bebas-Neue)
+
+# Screenshots
+<img width="512" alt="image" src="https://github.com/sanelli/fifteen/assets/2866041/d89d5499-20fc-44ed-aa40-639601275a6e">

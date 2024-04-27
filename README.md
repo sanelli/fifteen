@@ -1,5 +1,5 @@
 # fifteen
-[15 Puzzle](https://en.wikipedia.org/wiki/15_Puzzle) game implementation.
+[15 Puzzle](https://en.wikipedia.org/wiki/15_Puzzle) game implemented in C++ and SDL.
 
 ## OSX Setup
 - brew install sdl2
